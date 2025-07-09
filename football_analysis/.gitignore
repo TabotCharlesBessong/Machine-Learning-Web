@@ -1,2 +1,7 @@
 *.pt
 runs
+*.txt
+*.jpg
+*.avi
+*.env
+*.png
