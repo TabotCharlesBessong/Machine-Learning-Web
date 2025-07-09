@@ -37,7 +37,7 @@ class ViewTransformer():
     for object, object_tracks in tracks.items():
       for frame_num, track in enumerate(object_tracks):
         for track_id, track_info in track.items():
-          position = track_info['position_adjusted']
+          position = track_info['position']
           position = np.array(position)
           position_trasnformed = self.transform_point(position)
           if position_trasnformed is not None:
