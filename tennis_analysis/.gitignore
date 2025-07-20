@@ -1,0 +1,9 @@
+*.env
+*.pt
+*.pth
+*.pkl
+*.partial
+*.avi
+*.mp4
+*.jpg
+*.txt
