@@ -4,6 +4,7 @@ from trackers import PlayerTracker, BallTracker
 from drawers import PlayerTracksDrawer, BallTracksDrawer, TeamBallControlDrawer
 from team_assigner import TeamAssigner
 from ball_aquisition import BallAquisitionDetector
+from pass_and_interception_detector import PassAndInterceptionDetector
 
 def main():
   # read a video file
@@ -29,6 +30,14 @@ def main():
   # ball acquisition detection
   ball_aquisition_detector = BallAquisitionDetector()
   ball_aquisition = ball_aquisition_detector.detect_ball_possession(player_tracks, ball_tracks)
+  
+  # detect passes and interceptions
+  pass_and_interception_detector = PassAndInterceptionDetector()
+  passes = pass_and_interception_detector.detect_passes(ball_aquisition, player_teams)
+  interceptions = pass_and_interception_detector.detect_interceptions(ball_aquisition, player_teams)
+  
+  print("Passes Detected:", passes)
+  print("Interceptions Detected:", interceptions)
   
   # print(ball_aquisition)
   
