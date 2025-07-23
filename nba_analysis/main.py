@@ -3,10 +3,11 @@ from utils import read_video, save_video
 from trackers import PlayerTracker, BallTracker
 from drawers import PlayerTracksDrawer, BallTracksDrawer
 from team_assigner import TeamAssigner
+from ball_aquisition import BallAquisitionDetector
 
 def main():
   # read a video file
-  video_frames = read_video("input_videos/video_1.mp4")
+  video_frames = read_video("input_videos/video_2.mp4")
   
   # Initialize the player tracker with the YOLO model path
   player_tracker = PlayerTracker("models/players/best.pt")
@@ -25,7 +26,13 @@ def main():
   team_assigner = TeamAssigner()
   player_teams = team_assigner.get_player_teams_across_frames(video_frames,player_tracks,read_from_stub=True,stub_path="stubs/player_team_stubs.pkl")
   
-  print("Player Teams Assigned:", player_teams)
+  # ball acquisition detection
+  ball_aquisition_detector = BallAquisitionDetector()
+  ball_aquisition = ball_aquisition_detector.detect_ball_possession(player_tracks, ball_tracks)
+  
+  # print(ball_aquisition)
+  
+  # print("Player Teams Assigned:", player_teams)
 
 
   # draw output
@@ -33,9 +40,9 @@ def main():
   player_tracks_drawer = PlayerTracksDrawer() 
   ball_tracker_drawer = BallTracksDrawer()
   # drawe object tracks on video frames
-  output_video_frames = player_tracks_drawer.draw(video_frames, player_tracks,player_teams)
+  output_video_frames = player_tracks_drawer.draw(video_frames, player_tracks,player_teams,ball_aquisition)
   output_video_frames = ball_tracker_drawer.draw(output_video_frames, ball_tracks)
   # save video frame
-  save_video(output_video_frames,"output_videos/track/output_video_1.avi")
+  save_video(output_video_frames,"output_videos/track/output_video_2.avi")
 if __name__ == "__main__":
   main()
