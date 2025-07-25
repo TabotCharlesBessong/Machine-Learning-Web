@@ -28,6 +28,14 @@ def main():
   # interpolate ball positions
   ball_tracks = ball_tracker.interpolate_ball_positions(ball_tracks)
   
+  # Run keypoint extractor
+  court_keypoint_per_frame = court_keypoint_detector.get_court_keypoints(video_frames,read_from_stub=True, stub_path="stubs/court_keypoint_stubs3.pkl")
+  
+  # Remove wrong ball detections
+  ball_tracks = ball_tracker.remove_wrong_detections(ball_tracks)
+  # Interpolate ball tracks
+  ball_tracks = ball_tracker.interpolate_ball_positions(ball_tracks)
+  
   # Get court keypoints
   court_keypoints = court_keypoint_detector.get_court_keypoints(video_frames,read_from_stub=True, stub_path="stubs/court_keypoint_stubs3.pkl")
   
@@ -49,6 +57,8 @@ def main():
   # Tactical view conversion
   tactical_view_converter = TacticalViewConverter(court_image_path="./images/basketball_court.png")
   court_keypoints = tactical_view_converter.validate_keypoints(court_keypoints)
+  # court_keypoint_per_frame 
+  tactical_player_positions = tactical_view_converter.transform_players_to_tactical_view(court_keypoints, player_tracks)
   
   # print("Passes Detected:", passes)
   # print("Interceptions Detected:", interceptions)
@@ -84,7 +94,10 @@ def main():
     tactical_view_converter.court_image_path,
     width=tactical_view_converter.width,
     height=tactical_view_converter.height,
-    tactical_court_keypoints=court_keypoints,
+    tactical_court_keypoints = tactical_view_converter.key_points,
+    tactical_player_positions=tactical_player_positions,
+    player_assignment=player_teams,
+    ball_acquisition=ball_aquisition
   )
   
   # save video frame
