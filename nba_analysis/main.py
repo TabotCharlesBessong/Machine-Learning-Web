@@ -1,11 +1,12 @@
 
 from utils import read_video, save_video
 from trackers import PlayerTracker, BallTracker
-from drawers import PlayerTracksDrawer, BallTracksDrawer, TeamBallControlDrawer, PassInterceptionDrawer, CourtKeypointDrawer
+from drawers import PlayerTracksDrawer, BallTracksDrawer, TeamBallControlDrawer, PassInterceptionDrawer, CourtKeypointDrawer, TacticalViewDrawer
 from team_assigner import TeamAssigner
 from ball_aquisition import BallAquisitionDetector
 from pass_and_interception_detector import PassAndInterceptionDetector
 from court_keypoint_detector import CourtKeypointDetector
+from tactical_view_converter import TacticalViewConverter
 
 def main():
   # read a video file
@@ -45,6 +46,10 @@ def main():
   passes = pass_and_interception_detector.detect_passes(ball_aquisition, player_teams)
   interceptions = pass_and_interception_detector.detect_interceptions(ball_aquisition, player_teams)
   
+  # Tactical view conversion
+  tactical_view_converter = TacticalViewConverter(court_image_path="./images/basketball_court.png")
+  court_keypoints = tactical_view_converter.validate_keypoints(court_keypoints)
+  
   # print("Passes Detected:", passes)
   # print("Interceptions Detected:", interceptions)
   
@@ -60,6 +65,7 @@ def main():
   team_ball_control_drawer = TeamBallControlDrawer()
   pass_and_interception_drawer = PassInterceptionDrawer()
   court_keypoint_drawer = CourtKeypointDrawer()
+  tactical_view_drawer = TacticalViewDrawer()
   
   # drawe object tracks on video frames
   output_video_frames = player_tracks_drawer.draw(video_frames, player_tracks,player_teams,ball_aquisition)
@@ -71,6 +77,15 @@ def main():
   
   # draw court keypoints
   output_video_frames = court_keypoint_drawer.draw(output_video_frames, court_keypoints)
+  
+  # tactical view conversion
+  output_video_frames = tactical_view_drawer.draw(
+    output_video_frames,
+    tactical_view_converter.court_image_path,
+    width=tactical_view_converter.width,
+    height=tactical_view_converter.height,
+    tactical_court_keypoints=court_keypoints,
+  )
   
   # save video frame
   save_video(output_video_frames,"output_videos/track/output_video_3.avi")
